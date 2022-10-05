@@ -8,7 +8,7 @@ This application will allow creating/removing/updating/fetching TODO items. Each
 
 # TODO items
 
-The application should store TODO items, and each TODO item contains the following fields:
+- The application should store TODO items, and each TODO item contains the following fields:
 
 * `todoId` (string) - a unique id for an item
 * `createdAt` (string) - date and time when an item was created
