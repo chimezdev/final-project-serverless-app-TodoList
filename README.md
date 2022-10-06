@@ -289,3 +289,14 @@ Right click on the imported collection to set variables for the collection:
 Provide variables for the collection (similarly to how this was done in the course):
 
 ![Alt text](images/import-collection-5.png?raw=true "Image 5")
+
+
+
+
+# STEPS
+* git your app a name in the serverless.yml file
+* run `npm i` to install dependencies. change 'typescript', 'ts-loader' and 'webpack' versions if you encounter installation error
+* In the auth0Authorizer.ts, import `CustomAuthorizerHandler` and assign it as type to the handler.
+- next, include 'authorizer: Auth' at the same indentation level with method: in `creatTodo` and `updateTodo` functions.
+* In the resources session of the serverless.yml, I added the `GatewayResponseDefault4XX:` block
+
