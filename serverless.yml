@@ -1,13 +1,14 @@
 # TODO: Change the name of the org /done
 org: chimezdev
-app: chimezdev-serverless-app
-service: chimezdev-serverless-app
+app: chimezdev-udagram-app
+service: chimezdev-udagram-app
 
 plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-aws-documentation
   - serverless-reqvalidator-plugin
+  #- serverless-plugin-tracing
 
 provider:
   name: aws
@@ -28,7 +29,7 @@ provider:
     TODOS_TABLE: chimezdev-serverless-${self:provider.stage}
     #TODOS_CREATED_AT_INDEX: CreatedAtIndex
     ATTACHMENT_S3_BUCKET: chimezdev-serverless-${self:provider.stage}
-    #SIGNED_URL_EXPIRATION: 300
+    # SIGNED_URL_EXPIRATION: 300
     #AUTH_0_SECRET: iTlujbkbmOmofOduFCjyIFEf9Hy0iBpI3qx0vw1W5sINciWkzC43Ym02s3kdAn5P
 
 custom:
@@ -44,7 +45,7 @@ custom:
         schema: 
           required: 
             - name
-            -dueDate
+            - dueDate
           properties:
             name:
               minLength: 1 
@@ -129,7 +130,7 @@ functions:
             description: "Create a new todo item"
             requestModels:
               "application/json": CreateTodoRequest
-          reqValidationName: RequestBodyValidator
+          reqValidatorName: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -153,15 +154,15 @@ functions:
           cors: true
           authorizer: Auth
           documentation:
-            summary: "Update a todo item"
-            description: "Update a todo item"
+            summary: "Update an existing todo item"
+            description: "Update an existing todo item"
             requestModels:
               "application/json": UpdateTodoRequest
           reqValidationName: RequestBodyValidator
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:PutItem
+          - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
         Action: 
@@ -207,7 +208,7 @@ functions:
         Action:
           - s3:*
           - xray:PutTraceSegments
-        Resource: arn:aws:s3:::${self:provider.environment.S3_BUCKET_NAME}/*
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*
 
 resources:
   Resources:
@@ -215,10 +216,10 @@ resources:
     # TODO: Fill the properties
     # Feel free to change the names as you like.
     #DONE
-    onlyBody:
+    ApiGatewayValidator:
       Type: AWS::ApiGateway::RequestValidator
       Properties:
-        Name: 'only-body'
+        Name: 'ApiGatewayValidator'
         RestApiId:
           Ref: ApiGatewayRestApi
         ValidateRequestBody: true
@@ -249,8 +250,7 @@ resources:
         BucketName: ${self:provider.environment.ATTACHMENT_S3_BUCKET}
         CorsConfiguration:
           CorsRules:
-            -
-              AllowedOrigins:
+            - AllowedOrigins:
                 - '*'
               AllowedHeaders:
                 - '*'
